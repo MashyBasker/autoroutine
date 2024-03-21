@@ -1,0 +1,19 @@
+Table columns/schema
+--------------------
+Name
+Year of Experience
+Gender -> is_pregnant
+Age
+Address distance from college
+Course -> {weekly hours, number of weeks}
+Labs -> {weekly hours, number of weeks}
+Time Preference
+Weekday Preference
+
+Outcome
+-------
+
+- every professor must be satisfied
+- minimal time complexity(we will calculate it)
+- create a latex timetable(preferabbly in PDF)
+- database will be used to store the 
