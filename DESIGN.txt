@@ -2,7 +2,6 @@ Table columns/schema
 --------------------
 Name
 Year of Experience
-Gender -> is_pregnant
 Age
 Address distance from college
 Course -> {weekly hours, number of weeks}
