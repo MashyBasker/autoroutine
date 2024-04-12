@@ -1,3 +1,4 @@
+import numpy as np
 import csv
 import random
 from prettytable import PrettyTable
@@ -55,50 +56,50 @@ class Chromosome:
 
 
     def mutate(self):
-    # Check if there are unused courses
+        # Check if there are unused courses
         unused_courses = [course for course in self.classes if course not in [c[0] for c in self.schedule]]
 
         if unused_courses:
-        # Add a random unused course to the schedule
+            # Add a random unused course to the schedule
             new_course = random.choice(unused_courses)
             room = random.randint(1, self.num_rooms)
             timeslot = random.choice(range(len(TIMESLOTS) - int(new_course['WeeklyHours']) + 1))
             day = random.choice(DAYS_OF_WEEK)
 
-        # Ensure that the course is not scheduled on the same day of the week
+            # Ensure that the course is not scheduled on the same day of the week
             while any(c[3] == day for c in self.schedule if c[0]['Course'] == new_course['Course'] and c[0]['ClassType'] == new_course['ClassType']):
                 day = random.choice(DAYS_OF_WEEK)
 
             self.schedule.append((new_course, room, timeslot, day))
         else:
-        # Mutation: randomly change a class schedule
+            # Mutation: randomly change a class schedule
             idx = random.randint(0, len(self.schedule) - 1)
             course_data, room, timeslot, day = self.schedule[idx]  # Unpack course data, room, timeslot, and day
             class_type = course_data['ClassType']
             weekly_hours = int(course_data['WeeklyHours'])
 
-        # Calculate remaining weekly hours for the course
+            # Calculate remaining weekly hours for the course
             remaining_hours = weekly_hours - sum(1 for c in self.schedule if c[0] == course_data and c[1] == room and c[2] == timeslot and c[3] == day)
 
-        # Check if the selected class is a lab class
+            # Check if the selected class is a lab class
             is_lab = class_type == 'Lab'
 
             if is_lab or class_type == 'Theory':
-            # Find available consecutive timeslots for lab or theory classes
+                # Find available consecutive timeslots for lab or theory classes
                 available_slots = [i for i in range(len(TIMESLOTS) - remaining_hours + 1) if all(self.schedule[idx + j][1] is None for j in range(remaining_hours))]
                 if not available_slots:
                     return  # No valid timeslots available for lab or theory class
                 timeslot = random.choice(available_slots)
 
-            # Ensure that the course is not scheduled on the same day of the week
+                # Ensure that the course is not scheduled on the same day of the week
                 while any(c[3] == day for c in self.schedule if c[0]['Course'] == course_data['Course'] and c[0]['ClassType'] == course_data['ClassType'] and c[2] == timeslot):
                     day = random.choice(DAYS_OF_WEEK)
 
-            # Ensure that classes are scheduled for consecutive hours
+                # Ensure that classes are scheduled for consecutive hours
                 for j in range(remaining_hours):
                     self.schedule[idx + j] = (course_data, room, timeslot + j, day)
 
-            # Update the remaining entries to be empty for the same time slots
+                # Update the remaining entries to be empty for the same time slots
                 for k in range(len(self.schedule)):
                     if k != idx and self.schedule[k][2] in range(timeslot, timeslot + remaining_hours) and self.schedule[k][3] == day:
                         self.schedule[k] = (None, None, None, None)
@@ -174,7 +175,7 @@ def fitness(chromosome):
         # Constraint 4: Check if the total hours for each course do not exceed the weekly hours
         course_key = (class_data['Course'], class_data['ClassType'])
         course_hours[course_key] += hours
-        if course_hours[course_key] > hours * 2:  # Allow for some overlap to account for mutations
+        if course_hours[course_key] > int(class_data['WeeklyHours']):  # Only allow the total hours to match the specified weekly hours
             fitness_score -= 1
         
         # Constraint 5: Check if courses are scheduled on different days of the week
@@ -189,7 +190,6 @@ def fitness(chromosome):
         fitness_score -= 1
     
     return fitness_score
-
 
 
 # Generate and display timetable
@@ -213,7 +213,6 @@ def generate_timetable(schedule):
         timetable_table.align[field] = 'l'
 
     return timetable_table
-
 
 
 # Main loop for even semesters
