@@ -2,6 +2,10 @@ import numpy as np
 import csv
 import random
 from prettytable import PrettyTable
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib import colors
 
 NUM_GENERATIONS = 300  # Number of generations
 POPULATION_SIZE = 100  # Population size
@@ -293,3 +297,34 @@ for title, table in all_timetables:
     print(title)
     print(table)
     print()
+    
+def pretty_table_to_reportlab(pretty_table):
+    data = [pretty_table.field_names] + pretty_table._rows
+    reportlab_table = Table(data)
+    reportlab_table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+                                          ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                                          ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                                          ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                                          ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                                          ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                                          ('GRID', (0, 0), (-1, -1), 1, colors.black)]))
+    return reportlab_table
+
+# Create a PDF
+doc = SimpleDocTemplate("timetables.pdf", pagesize=letter)
+
+# List to hold flowables
+flowables = []
+
+# Iterate through all timetables
+for title, pretty_table in all_timetables:
+    # Convert PrettyTable to ReportLab table
+    reportlab_table = pretty_table_to_reportlab(pretty_table)
+    
+    # Add title to the flowables
+    title_paragraph = Paragraph(title, ParagraphStyle(name='Title'))
+    flowables.append(title_paragraph)
+    flowables.append(reportlab_table)
+
+# Build the PDF
+doc.build(flowables)
