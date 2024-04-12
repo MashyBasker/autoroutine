@@ -1,0 +1,4 @@
+Constraints:
+- two classes cannot occur at the same room and at the same time
+- a professor cannot take 2 different classes at the same time
+- Theory classes cannot exceed 2 hours at a time except Lab which can continue upto 3 hours

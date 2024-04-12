@@ -1,4 +1,0 @@
-numpy==1.26.4
-prettytable==3.10.0
-psycopg2==2.9.9
-wcwidth==0.2.13
