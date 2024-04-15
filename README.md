@@ -1,1 +1,1 @@
-# Automatic Timetable Generation with Particle Swarm Optimisation and Selective Search
+# Automatic Timetable Generation with Genetic Algorithms
